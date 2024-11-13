@@ -30,7 +30,7 @@ public class CircularCloudLayouterTests
     [TestCase(1, -1, TestName = "WhenHeightIsNegative")]
     public void Layouter_ShouldThrowArgumentExceptionn(int width, int height)
     {
-        var layouter = new CircularCloudLayouter(new(0, 0), 0.1, 0.1);
+        var layouter = new CircularCloudLayouter(new(0, 0));
         var size = new Size(width, height);
 
         Action action = () => layouter.PutNextRectangle(size);
@@ -41,7 +41,7 @@ public class CircularCloudLayouterTests
     [Test]
     public void FirstRectang_ShouldBeInCenter()
     {
-        var layouter = new CircularCloudLayouter(new(0, 0), 0.1, 0.1);
+        var layouter = new CircularCloudLayouter(new(0, 0));
         var rectangleSize = new Size(10, 10);
 
         var actualRectangle = layouter.PutNextRectangle(rectangleSize);

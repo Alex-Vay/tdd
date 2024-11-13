@@ -8,8 +8,10 @@ public class CircularCloudLayouter : ICircularCloudLayouter
     private Point center;
     private List<Rectangle> rectangles = [];
     private SpiralPointsGenerator spiral;
+    private double step = Constans.LayoutStep; 
+    private double angleOffset = Constans.LayoutAngleOffset;
 
-    public CircularCloudLayouter(Point center, double step, double angleOffset)
+    public CircularCloudLayouter(Point center)
     {
         this.center = center;
         spiral = new SpiralPointsGenerator(center, step, angleOffset);
