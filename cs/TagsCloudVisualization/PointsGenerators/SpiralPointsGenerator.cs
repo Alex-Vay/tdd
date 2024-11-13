@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace TagsCloudVisualization.PointsGenerator;
+namespace TagsCloudVisualization.PointsGenerators;
 
 public class SpiralPointsGenerator
 {

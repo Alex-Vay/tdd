@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 using TagsCloudVisualization.Visualizers;
-using TagsCloudVisualizationTests;
+using TagsCloudVisualization.CloudLayouter;
 
 namespace TagsCloudVisualization;
 

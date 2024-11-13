@@ -3,9 +3,9 @@ using FluentAssertions;
 using System.Drawing;
 using TagsCloudVisualization.CloudLayouter;
 using TagsCloudVisualization.Visualizers;
-using TagsCloudVisualizationTests;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization;
+namespace TagsCloudVisualizationTests.CircularCloudLayouterTest;
 
 [TestFixture]
 public class CircularCloudLayouterTests
@@ -28,12 +28,12 @@ public class CircularCloudLayouterTests
     [TestCase(1, 0, TestName = "WhenHeightIsZero")]
     [TestCase(-1, 1, TestName = "WhenWidthIsNegative")]
     [TestCase(1, -1, TestName = "WhenHeightIsNegative")]
-    public void Layouter_ShouldThrowArgumentExceptionn(int width, int height)
+    public void LayouterPutNextRectangle_ShouldThrowArgumentException(int width, int height)
     {
         var layouter = new CircularCloudLayouter(new(0, 0));
         var size = new Size(width, height);
 
-        Action action = () => layouter.PutNextRectangle(size);
+        var action = () => layouter.PutNextRectangle(size);
 
         action.Should().Throw<ArgumentException>();
     }

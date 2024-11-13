@@ -1,8 +1,6 @@
 ﻿using System.Drawing;
-using TagsCloudVisualization;
-using TagsCloudVisualization.CloudLayouter;
 
-namespace TagsCloudVisualizationTests;
+namespace TagsCloudVisualization.CloudLayouter;
 
 public static class CloudGenerator
 {
