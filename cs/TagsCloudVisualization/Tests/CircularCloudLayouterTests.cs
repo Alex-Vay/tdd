@@ -1,16 +1,26 @@
-using NUnit.Framework.Interfaces;
+﻿using NUnit.Framework.Interfaces;
 using FluentAssertions;
 using System.Drawing;
 using TagsCloudVisualization.CloudLayouter;
 using TagsCloudVisualization.Visualizers;
-using TagsCloudVisualization;
+using NUnit.Framework;
 
-namespace TagsCloudVisualizationTests.CircularCloudLayouterTest;
+namespace TagsCloudVisualization.Tests.CircularCloudLayouterTests;
 
-[TestFixture]
+[TestFixture, Parallelizable]
 public class CircularCloudLayouterTests
 {
-    private List<Rectangle> rectanglesInTest;
+    private CircularCloudLayouter cloudLayouter;
+    private const int imageWidth = 1500;
+    private const int imageHeight = 1500;
+
+    [SetUp]
+    public void Init()
+    {
+        var center = new Point(imageWidth / 2, imageHeight / 2);
+        cloudLayouter = new CircularCloudLayouter(center);
+        cloudLayouter.GenerateCloud(100);
+    }
 
     [TearDown]
     public void TearDown()
@@ -20,7 +30,7 @@ public class CircularCloudLayouterTests
         var directory = "FailedVisualisations";
         var path = Path.Combine(directory, $"{TestContext.CurrentContext.Test.Name}_visualisation.png");
         var visuliser = new SimpleCloudVisualizer();
-        visuliser.CreateBitmap(rectanglesInTest, new(Constans.ImageWidth, Constans.ImageHeight), directory, path);
+        visuliser.CreateBitmap(cloudLayouter.GeneratedRectangles, new(imageWidth, imageHeight), path);
         Console.WriteLine($"Tag cloud visualization saved to file {path}");
     }
 
@@ -28,75 +38,66 @@ public class CircularCloudLayouterTests
     [TestCase(1, 0, TestName = "WhenHeightIsZero")]
     [TestCase(-1, 1, TestName = "WhenWidthIsNegative")]
     [TestCase(1, -1, TestName = "WhenHeightIsNegative")]
-    public void LayouterPutNextRectangle_ShouldThrowArgumentException(int width, int height)
+    public void PutNextRectangle_ShouldThrowArgumentException(int width, int height)
     {
-        var layouter = new CircularCloudLayouter(new(0, 0));
         var size = new Size(width, height);
 
-        var action = () => layouter.PutNextRectangle(size);
+        var action = () => cloudLayouter.PutNextRectangle(size);
 
         action.Should().Throw<ArgumentException>();
     }
 
     [Test]
-    public void FirstRectang_ShouldBeInCenter()
+    public void PutNextRectangle_FirstRectangle_ShouldBeInCenter()
     {
-        var layouter = new CircularCloudLayouter(new(0, 0));
+        cloudLayouter = new CircularCloudLayouter(cloudLayouter.Center);
         var rectangleSize = new Size(10, 10);
-
-        var actualRectangle = layouter.PutNextRectangle(rectangleSize);
         var expectedRectangle = new Rectangle(
-            -rectangleSize.Width / 2,
-            -rectangleSize.Height / 2,
+            cloudLayouter.Center.X - rectangleSize.Width / 2,
+            cloudLayouter.Center.Y - rectangleSize.Height / 2,
             rectangleSize.Width,
             rectangleSize.Height
         );
-        rectanglesInTest = layouter.GetRectangles();
+
+        var actualRectangle = cloudLayouter.PutNextRectangle(rectangleSize);
 
         actualRectangle.Should().BeEquivalentTo(expectedRectangle);
     }
 
     [Test]
     [Repeat(10)]
-    public void Rectangles_ShouldNotHaveIntersects()
-    {
-        var layouter = CloudGenerator.GenerateCloud(100);
-        rectanglesInTest = layouter.GetRectangles();
-
-        var expectedResult = AreRectanglesHaveIntersects(rectanglesInTest);
-
-        expectedResult.Should().BeFalse();
-    }
+    public void PutNextRectangle_Rectangles_ShouldNotHaveIntersects() =>
+        AreRectanglesHaveIntersects(cloudLayouter.GeneratedRectangles).Should().BeFalse();
 
     [Test]
     [Repeat(10)]
-    public void AllRectanglesCenter_ShoulBeLikeInitCenter()
+    public void PutNextRectangle_AllRectanglesCenter_ShoulBeLikeInitCenter()
     {
-        var center = new Point(Constans.ImageWidth / 2, Constans.ImageHeight / 2);
-        var treshold = Constans.MaxRectangleSize / 2;
-        var layouter = CloudGenerator.GenerateCloud(100);
-        rectanglesInTest = layouter.GetRectangles();
+        var center = cloudLayouter.Center;
+        var minRectangleSize = 1;
+        var maxRectangleSize = 10;
+        var treshold = maxRectangleSize / 2;
 
-        var actualCenter = GetCenterOfAllRectangles(rectanglesInTest);
+        cloudLayouter.GenerateCloud(100, 10, maxRectangleSize);
 
+        var actualCenter = GetCenterOfAllRectangles(cloudLayouter.GeneratedRectangles);
         actualCenter.X.Should().BeInRange(center.X - treshold, center.X + treshold);
         actualCenter.Y.Should().BeInRange(center.Y - treshold, center.Y + treshold);
     }
 
     [Test]
     [Repeat(10)]
-    public void RectanglesDensity_ShouldBeMax()
+    public void PutNextRectangle_RectanglesDensity_ShouldBeMax()
     {
-        var expectedDensity = 0.5;
-        var center = new Point(Constans.ImageWidth / 2, Constans.ImageHeight / 2);
-        var layouter = CloudGenerator.GenerateCloud(100);
-        rectanglesInTest = layouter.GetRectangles();
+        var expectedDensity = 0.45;
+        var center = cloudLayouter.Center;
+        var rectangles = cloudLayouter.GeneratedRectangles;
 
-        var rectanglesArea = rectanglesInTest.Sum(rect => rect.Width * rect.Height);
-        var radius = GetMaxDistanceBetweenRectangleAndCenter(rectanglesInTest);
+        var rectanglesArea = rectangles.Sum(rect => rect.Width * rect.Height);
+        
+        var radius = GetMaxDistanceBetweenRectangleAndCenter(rectangles);
         var circleArea = Math.PI * radius * radius;
         var density = rectanglesArea / circleArea;
-
         density.Should().BeGreaterThanOrEqualTo(expectedDensity);
     }
 
@@ -130,9 +131,9 @@ public class CircularCloudLayouterTests
         return maxDistance;
     }
 
-    
 
-    private bool AreRectanglesHaveIntersects(List<Rectangle> rectangles)
+
+    private static bool AreRectanglesHaveIntersects(List<Rectangle> rectangles)
     {
         for (var i = 0; i < rectangles.Count; i++)
             for (var j = i + 1; j < rectangles.Count; j++)
@@ -141,6 +142,6 @@ public class CircularCloudLayouterTests
         return false;
     }
 
-    private double GetDistanceBetweenPoints(Point point1, Point point2)
+    private static double GetDistanceBetweenPoints(Point point1, Point point2)
         => Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2));
 }

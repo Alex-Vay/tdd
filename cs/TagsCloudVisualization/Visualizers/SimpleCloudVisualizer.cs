@@ -1,15 +1,17 @@
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 
 namespace TagsCloudVisualization.Visualizers;
 
 public class SimpleCloudVisualizer
 {
+    private const string imagesDirectory = "images";
+
     public void CreateBitmap(
         IEnumerable<Rectangle> rectangles, 
         Size bitmapSize,
-        string directory = Constans.ImagesDirectory,
-        string currentPath = null
+        string path = null
         )
     {
         var bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
@@ -20,20 +22,21 @@ public class SimpleCloudVisualizer
             var pen = new Pen(GetRandomColor());
             graphics.DrawRectangle(pen, rectangle);
         }
-        Directory.CreateDirectory(directory);
-        var path = currentPath == null ? GetPathToImages() : currentPath;
-        bitmap.Save(path, ImageFormat.Jpeg);
+        var currentPath = path == null ? GetPathToImages(rectangles.Count()) : path;
+        Directory.CreateDirectory(Path.GetDirectoryName(currentPath));
+        bitmap.Save((string)currentPath, ImageFormat.Jpeg);
+        graphics.Dispose();
     }
 
-    private Color GetRandomColor()
+    private static Color GetRandomColor()
     {
         var random = new Random();
         return Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
     }
 
-    private static string GetPathToImages()
+    private static string GetPathToImages(int rectanglesNumber)
     {
-        var filename = $"{Constans.RectanglesNumber}_{Constans.LayoutStep}_{Constans.LayoutAngleOffset}_TagCloud.jpg";
-        return Path.Combine(Constans.ImagesDirectory, filename);
+        var filename = $"{rectanglesNumber}_TagCloud.jpg";
+        return Path.Combine(imagesDirectory, filename);
     }
 }

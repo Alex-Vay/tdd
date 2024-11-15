@@ -2,15 +2,19 @@ using System.Drawing;
 
 namespace TagsCloudVisualization.PointsGenerators;
 
-public class SpiralPointsGenerator
+public class SpiralPointsGenerator : IPointsGenerator
 {
-    private double angleOffset;
+    private readonly double step = 0.1;
+    private readonly double angleOffset = 0.1;
     private readonly Point center;
-    private readonly double step;
     private double angle = 0;
+
+    public SpiralPointsGenerator(Point center) => this.center = center;
 
     public SpiralPointsGenerator(Point center, double step, double angleOffset)
     {
+        if (step == 0 || angleOffset == 0)
+            throw new ArgumentException($"Step and angleOffset must not be zero");
         this.center = center;
         this.step = step;
         this.angleOffset = angleOffset;
