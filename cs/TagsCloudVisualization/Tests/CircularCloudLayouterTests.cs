@@ -71,18 +71,18 @@ public class CircularCloudLayouterTests
 
     [Test]
     [Repeat(10)]
-    public void PutNextRectangle_AllRectanglesCenter_ShoulBeLikeInitCenter()
+    public void PutNextRectangle_CloudCenterMust_ShouldBeInLayoterCenter()
     {
-        var center = cloudLayouter.Center;
-        var minRectangleSize = 1;
         var maxRectangleSize = 10;
-        var treshold = maxRectangleSize / 2;
-
-        cloudLayouter.GenerateCloud(100, 10, maxRectangleSize);
+        var expectedDiscrepancy = maxRectangleSize;
+        var minRectangleSize = 1;
+        var center = cloudLayouter.Center;
+        
+        cloudLayouter.GenerateCloud(100, minRectangleSize, maxRectangleSize);
 
         var actualCenter = GetCenterOfAllRectangles(cloudLayouter.GeneratedRectangles);
-        actualCenter.X.Should().BeInRange(center.X - treshold, center.X + treshold);
-        actualCenter.Y.Should().BeInRange(center.Y - treshold, center.Y + treshold);
+        actualCenter.X.Should().BeInRange(center.X - expectedDiscrepancy, center.X + expectedDiscrepancy);
+        actualCenter.Y.Should().BeInRange(center.Y - expectedDiscrepancy, center.Y + expectedDiscrepancy);
     }
 
     [Test]
@@ -130,8 +130,6 @@ public class CircularCloudLayouterTests
         }
         return maxDistance;
     }
-
-
 
     private static bool AreRectanglesHaveIntersects(List<Rectangle> rectangles)
     {
