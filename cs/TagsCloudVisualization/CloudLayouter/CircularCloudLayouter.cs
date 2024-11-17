@@ -7,7 +7,7 @@ public class CircularCloudLayouter : ICircularCloudLayouter
 {
     public Point Center { get; }
     public List<Rectangle> GeneratedRectangles { get; }
-    private IPointsGenerator spiral { get; }
+    private readonly IPointsGenerator spiral;
 
     public CircularCloudLayouter(Point center)
     {

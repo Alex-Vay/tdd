@@ -14,17 +14,18 @@ public class SimpleCloudVisualizer
         )
     {
         var bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
-        var graphics = Graphics.FromImage(bitmap);
-        graphics.Clear(Color.White);
-        foreach (var rectangle in rectangles)
+        using (var graphics = Graphics.FromImage(bitmap))
         {
-            var pen = new Pen(GetRandomColor());
-            graphics.DrawRectangle(pen, rectangle);
+            graphics.Clear(Color.White);
+            foreach (var rectangle in rectangles)
+            {
+                var pen = new Pen(GetRandomColor());
+                graphics.DrawRectangle(pen, rectangle);
+            }
+            var currentPath = path == null ? GetPathToImages(rectangles.Count()) : path;
+            Directory.CreateDirectory(Path.GetDirectoryName(currentPath));
+            bitmap.Save((string)currentPath, ImageFormat.Jpeg);
         }
-        var currentPath = path == null ? GetPathToImages(rectangles.Count()) : path;
-        Directory.CreateDirectory(Path.GetDirectoryName(currentPath));
-        bitmap.Save((string)currentPath, ImageFormat.Jpeg);
-        graphics.Dispose();
     }
 
     private static Color GetRandomColor()

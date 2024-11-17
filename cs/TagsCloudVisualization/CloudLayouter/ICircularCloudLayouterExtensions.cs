@@ -4,7 +4,8 @@ namespace TagsCloudVisualization.CloudLayouter;
 
 public static class ICircularCloudLayouterExtensions 
 {
-    public static void GenerateCloud(this ICircularCloudLayouter cloudLayouter, 
+    public static void GenerateCloud(
+        this ICircularCloudLayouter cloudLayouter, 
         int rectanglesNumber = 1000,
         int minRectangleSize = 10,
         int maxRectangleSize = 50) 
