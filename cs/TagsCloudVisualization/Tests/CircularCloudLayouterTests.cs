@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace TagsCloudVisualization.Tests.CircularCloudLayouterTests;
 
-[TestFixture, NonParallelizable]
+[TestFixture]
 public class CircularCloudLayouterTests
 {
     private CircularCloudLayouter cloudLayouter;
@@ -64,7 +64,7 @@ public class CircularCloudLayouterTests
         actualRectangle.Should().BeEquivalentTo(expectedRectangle);
     }
 
-    [Test, Parallelizable]
+    [Test, Parallelizable(ParallelScope.Self)]
     [Repeat(10)]
     public void PutNextRectangle_Rectangles_ShouldNotHaveIntersects() =>
         AreRectanglesHaveIntersects(cloudLayouter.GeneratedRectangles).Should().BeFalse();
