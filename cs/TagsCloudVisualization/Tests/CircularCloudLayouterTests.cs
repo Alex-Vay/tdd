@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace TagsCloudVisualization.Tests.CircularCloudLayouterTests;
 
-[TestFixture]
+[TestFixture, NonParallelizable]
 public class CircularCloudLayouterTests
 {
     private CircularCloudLayouter cloudLayouter;

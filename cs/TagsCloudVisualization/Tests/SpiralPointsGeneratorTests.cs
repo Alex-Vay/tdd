@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace TagsCloudVisualization.Tests.SpiralPointsGeneratorTests;
 
-[TestFixture]
+[TestFixture, Parallelizable(ParallelScope.All)]
 public class SpiralPointsGeneratorTests
 {
     [TestCase(0, 1, TestName = "WhenStepIsZero")]

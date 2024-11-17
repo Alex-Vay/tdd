@@ -16,9 +16,8 @@ public class CircularCloudLayouter : ICircularCloudLayouter
         spiral = new SpiralPointsGenerator(center);
     }
 
-    public CircularCloudLayouter(Point center, int step, int angleOffset)
+    public CircularCloudLayouter(Point center, int step, int angleOffset) : this(center)
     {
-        GeneratedRectangles = new List<Rectangle>();
         spiral = new SpiralPointsGenerator(center, step, angleOffset);
     }
 
